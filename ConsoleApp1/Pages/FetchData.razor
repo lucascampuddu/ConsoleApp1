@@ -1,0 +1,45 @@
+﻿@page "/fetchdata"
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+@if (forecasts != null)
+{
+    <MudTable Items="@forecasts.Take(4)" Hover="true" Breakpoint="Breakpoint.LgAndUp">
+        <HeaderContent>
+            <MudTh>Data</MudTh>
+            <MudTh>TempC</MudTh>
+            <MudTh>TempF</MudTh>
+            <MudTh>Sommario</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Nr">@context.Date.Date</MudTd>
+            <MudTd DataLabel="Sign">@context.TemperatureC</MudTd>
+            <MudTd DataLabel="Name">@context.TemperatureF</MudTd>
+            <MudTd DataLabel="Molar mass">@context.Summary</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="@(() => Snackbar.Add("Simple Snackbar"))">
+    Open Snackbar
+</MudButton>
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
